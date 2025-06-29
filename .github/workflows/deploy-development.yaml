@@ -1,49 +1,42 @@
-name: Deploy to GitHub Pages from Develop
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - develop
+    branches: [develop]
 
 permissions:
-  contents: read
   pages: write
   id-token: write
 
 jobs:
   build:
-    name: Build with Parcel
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '18'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: npm install -D parcel
 
-      - name: Build project using Parcel
+      - name: Build Website
         run: npx parcel build src/index.html --dist-dir dist
 
-      - name: Upload build artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-          
       - name: Disable Jekyll
         run: touch dist/.nojekyll
 
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+          name: github-pages  # ⬅ Set name explicitly to prevent duplicates
+
   deploy:
-    name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
-    environment: github-pages   
-
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
