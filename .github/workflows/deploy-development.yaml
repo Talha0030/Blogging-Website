@@ -34,6 +34,9 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+          
+      - name: Disable Jekyll
+        run: touch dist/.nojekyll
 
   deploy:
     name: Deploy to GitHub Pages
